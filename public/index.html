@@ -58,7 +58,7 @@
                         <slider class="bottom-gap" slider-id="islandSize.id" ng-model="islandSize.value" value="islandSize.value" min="islandSize.min" max="islandSize.max" step="islandSize.step" on-slide="onChangeIslandSize()" ng-click="onChangeIslandSize()" formatter="tooltipPercentageFormatter(value)">
                         </slider>
 
-                        <button type="button" class="btn btn-primary" ng-click="resfreshAll()">Refresh</button>
+                        <button type="button" class="btn btn-primary" ng-click="refreshAll()">Refresh</button>
 
                         <hr />
 
@@ -148,7 +148,7 @@
                     </div>
                 </div>
                 <div class="footer">
-                    <p><em>Source code available on <a target="_blank" href="https://github.com/alxgiraud/islandGenerator">Github</a></em></p>
+                    <p><em>XXX add link to public repo XXX</em></p>
                 </div>
             </div>
         </div>
@@ -165,30 +165,13 @@
 
     <script src="../app/app.js"></script>
     <script src="../app/services/genericServices.js"></script>
+    <script src="../app/entities/glyph.js"></script>
+    <script src="../app/entities/page.js"></script>
     <script src="../app/entities/hexagon.js"></script>
     <script src="../app/entities/perlin.js"></script>
     <script src="../app/entities/world.js"></script>
     <script src="../app/services/mapServices.js"></script>
     <script src="../app/controllers/mainCtrl.js"></script>
-
-    <script>
-        (function(i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function() {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-74043644-1', 'auto');
-        ga('send', 'pageview');
-
-    </script>
-
 </body>
 
 </html>

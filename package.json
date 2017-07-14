@@ -1,7 +1,7 @@
 {
-  "name": "IslandGenerator",
+  "name": "GlyphGenerator",
   "version": "1.0.0",
-  "description": "Procedural generation of SVG Islands using Perlin Noise and gradients in a grid of hexagons.",
+  "description": "Procedural generation of SVG glyphs for constructed language.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,7 +20,7 @@
     "perlin",
     "noise"
   ],
-  "author": "Alexandre Giraud",
+  "author": "Daniel Andersen",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/alxgiraud/islandGenerator/issues"
