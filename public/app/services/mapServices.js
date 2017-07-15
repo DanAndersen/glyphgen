@@ -1,5 +1,5 @@
 /*global app, d3, jsPDF, canvg*/
-app.factory('mapServices', [function () {
+app.factory('mapServices', ['genericServices', function (genericServices) {
     'use strict';
 
     var constants = {
@@ -87,54 +87,49 @@ app.factory('mapServices', [function () {
 
         drawPage: function (page) {
             var glyphs = page.glyphs;
-            var x = 0;
-            var y = 0;
+            var glyphCenterX = 0;
+            var glyphCenterY = 0;
             var radius = constants.HEX_WIDTH / 2;
             var renderedGlyph;
 
             var spaceBetweenLines = radius / 2;
+            var spaceBetweenGlyphs = radius + 1.5;
 
             var color = 'rgb(255,0,0)';
             var colorStroke = 'lightgrey';
             var strokeWidth = 0.5;
 
-            var glyphWidth = radius / 2;
-            var glyphHeight = radius;
+            var glyphWidth = radius;
+            var glyphHeight = radius * 2;
 
             var currentGlyph;
 
+            var strokeFunction = d3.svg.line()
+                                        .x(function(d) { 
+                                            return page.normalizedPoints[d][0] * glyphWidth/2 + glyphCenterX;
+                                        })
+                                        .y(function(d) { 
+                                            return page.normalizedPoints[d][1] * glyphHeight/2 + glyphCenterY;
+                                        })
+                                        .interpolate("basis");
+
+
             for (var i = 0; i < glyphs.length; i++) {
 
-                y = 0;
-                x += radius;
+                glyphCenterY = 0;
+                glyphCenterX += glyphWidth + spaceBetweenGlyphs;
 
                 for (var j = 0; j < glyphs[i].length; j++) {
                 
-                    y += radius + spaceBetweenLines;
+                    glyphCenterY += glyphHeight + spaceBetweenLines;
 
-                    // define segment endpoints
-                    var left_x = x - glyphWidth/2;
-                    var right_x = x + glyphWidth/2;
-
-                    var mid_y = y;
-                    var top_y = y - glyphHeight/2;
-                    var bottom_y = y + glyphHeight/2;
-
-
-
-
+                    
                     currentGlyph = glyphs[i][j];
 
                     renderedGlyph = d3.select('#glyph_x' + i + 'y' + j);
 
                     if (renderedGlyph.empty()) {
                         renderedGlyph = d3.select('g').append('g').attr('id', 'glyph_x' + i + 'y' + j);
-
-                        renderedGlyph.append('circle')
-                            .attr('id', 'glyph_x' + i + 'y' + j)
-                            .attr('cx', x)
-                            .attr('cy', y)
-                            .attr('r', radius);
                     }
 
                     renderedGlyph.attr('fill', color)
@@ -143,83 +138,22 @@ app.factory('mapServices', [function () {
 
                     renderedGlyph.selectAll("*").remove();
 
-                    for (var segmentIdx = 0; segmentIdx < page.numGlyphSegments; segmentIdx++) {
-                        if (currentGlyph.segments[segmentIdx]) {
+                    renderedGlyph.append('circle')
+                                    .attr('cx', glyphCenterX)
+                                    .attr('cy', glyphCenterY)
+                                    .attr('r', radius)
+                                    .attr('fill', 'none');
 
-                            var x1 = x;
-                            var x2 = x;
-                            var y1 = y;
-                            var y2 = y;
+                    for (var strokeIdx = 0; strokeIdx < currentGlyph.strokes.length; strokeIdx++) {
+                        var stroke = currentGlyph.strokes[strokeIdx];
 
-                            switch(segmentIdx) {
-                                case 0:
-                                    x1 = right_x;
-                                    x2 = right_x;
-                                    y1 = mid_y;
-                                    y2 = bottom_y;
-                                    break;
-                                case 1:
-                                    x1 = left_x;
-                                    x2 = right_x;
-                                    y1 = mid_y;
-                                    y2 = bottom_y;
-                                    break;
-                                case 2:
-                                    x1 = right_x;
-                                    x2 = left_x;
-                                    y1 = mid_y;
-                                    y2 = bottom_y;
-                                    break;
-                                case 3:
-                                    x1 = left_x;
-                                    x2 = left_x;
-                                    y1 = mid_y;
-                                    y2 = bottom_y;
-                                    break;
-                                case 4:
-                                    x1 = right_x;
-                                    x2 = right_x;
-                                    y1 = top_y;
-                                    y2 = mid_y;
-                                    break;
-                                case 5:
-                                    x1 = left_x;
-                                    x2 = right_x;
-                                    y1 = top_y;
-                                    y2 = mid_y;
-                                    break;
-                                case 6:
-                                    x1 = right_x;
-                                    x2 = left_x;
-                                    y1 = top_y;
-                                    y2 = mid_y;
-                                    break;
-                                case 7:
-                                    x1 = left_x;
-                                    x2 = left_x;
-                                    y1 = top_y;
-                                    y2 = mid_y;
-                                    break;
-                                default:
-                                    break;
-                            }
+                        renderedGlyph.append('path')
+                                        .attr('d', strokeFunction(stroke))
+                                        .attr('stroke', 'black' )
+                                        .attr('stroke-width', strokeWidth)
+                                        .attr('fill', 'none');
 
-                            var currentStrokeWidth = strokeWidth;
-                            if (x1 == x2) {
-                                currentStrokeWidth *= 1.5;
-                            }
-
-                            renderedGlyph.append("line")
-                                         .attr('x1', x1)
-                                         .attr('x2', x2)
-                                         .attr('y1', y1)
-                                         .attr('y2', y2)
-                                         .attr('stroke', 'black')
-                                         .attr('stroke-width', currentStrokeWidth);
-                        }
-                    }
-
-                    
+                    }                    
                 }
             }
         },
