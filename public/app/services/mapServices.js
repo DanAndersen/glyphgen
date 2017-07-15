@@ -204,13 +204,18 @@ app.factory('mapServices', [function () {
                                     break;
                             }
 
+                            var currentStrokeWidth = strokeWidth;
+                            if (x1 == x2) {
+                                currentStrokeWidth *= 1.5;
+                            }
+
                             renderedGlyph.append("line")
                                          .attr('x1', x1)
                                          .attr('x2', x2)
                                          .attr('y1', y1)
                                          .attr('y2', y2)
                                          .attr('stroke', 'black')
-                                         .attr('stroke-width', strokeWidth);
+                                         .attr('stroke-width', currentStrokeWidth);
                         }
                     }
 

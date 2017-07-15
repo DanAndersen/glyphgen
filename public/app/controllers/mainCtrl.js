@@ -2,7 +2,7 @@
 app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome', 'Page', function ($scope, mapServices, genericServices, Biome, Page) {
     'use strict';
 
-    var page = new Page(10, 10);
+    var page = new Page(20, 20);
 
     var world = new Biome(45, Math.round(45 * Math.sqrt(3) / 2));
 
