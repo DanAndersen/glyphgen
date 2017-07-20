@@ -85,7 +85,7 @@ app.factory('mapServices', ['genericServices', function (genericServices) {
 
         },
 
-        drawPage: function (page) {
+        drawPage: function (page, $scope) {
             var glyphs = page.glyphs;
             var glyphCenterX = 0;
             var glyphCenterY = 0;
@@ -111,7 +111,7 @@ app.factory('mapServices', ['genericServices', function (genericServices) {
                                         .y(function(d) { 
                                             return page.normalizedPoints[d][1] * glyphHeight/2 + glyphCenterY;
                                         })
-                                        .interpolate("basis");
+                                        .interpolate($scope.selectedLineInterpolationMode.name);
 
 
             for (var i = 0; i < glyphs.length; i++) {

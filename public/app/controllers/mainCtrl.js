@@ -8,6 +8,63 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
 
     mapServices.initMap();
 
+
+
+    /* Line interpolation mode */
+    $scope.lineInterpolationModes = [
+        {
+            id: 0,
+            name: 'linear'
+        },
+        {
+            id: 1,
+            name: 'step-before'
+        },
+        {
+            id: 2,
+            name: 'step-after'
+        },
+        {
+            id: 3,
+            name: 'basis'
+        },
+        {
+            id: 4,
+            name: 'basis-open'
+        },
+        {
+            id: 5,
+            name: 'basis-closed'
+        },
+        {
+            id: 6,
+            name: 'cardinal'
+        },
+        {
+            id: 7,
+            name: 'cardinal-open'
+        },
+        {
+            id: 8,
+            name: 'cardinal-closed'
+        },
+        {
+            id: 9,
+            name: 'monotone'
+        },
+    ];
+    $scope.selectedLineInterpolationMode = $scope.lineInterpolationModes[3];
+    $scope.selectLineInterpolationMode = function(id) {
+        $scope.selectedLineInterpolationMode = $scope.lineInterpolationModes[id];
+
+        mapServices.drawPage(page, $scope);
+    }
+
+
+
+
+
+
     /* Dropdown mode */
     $scope.modes = [
         {
@@ -33,7 +90,7 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
         $scope.selectedMode = $scope.modes[id];
         world.setBiomes($scope.selectedMode.id, $scope.islandSize.value, $scope.biomesDistribution, $scope.isGrey);
         mapServices.drawGrid(world, $scope.isGrey, $scope.biomesDistribution);
-        mapServices.drawPage(page);
+        mapServices.drawPage(page, $scope);
     };
 
 
@@ -45,7 +102,7 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
         }
         world.setBiomes($scope.selectedMode.id, $scope.islandSize.value, $scope.biomesDistribution, $scope.isGrey);
         mapServices.drawGrid(world, $scope.isGrey, $scope.selectedMode.id);
-        mapServices.drawPage(page);
+        mapServices.drawPage(page, $scope);
     };
 
     /* Island Size */
@@ -59,7 +116,7 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
     $scope.onChangeIslandSize = function () {
         world.setBiomes($scope.selectedMode.id, $scope.islandSize.value, $scope.biomesDistribution, $scope.isGrey);
         mapServices.drawGrid(world, $scope.isGrey, $scope.biomesDistribution);
-        mapServices.drawPage(page);
+        mapServices.drawPage(page, $scope);
     };
 
     $scope.tooltipPercentageFormatter = function (value) {
@@ -168,7 +225,7 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
         
         world.setBiomes($scope.selectedMode.id, $scope.islandSize.value, $scope.biomesDistribution, $scope.isGrey);
         mapServices.drawGrid(world, $scope.isGrey, $scope.selectedMode.id);
-        mapServices.drawPage(page);
+        mapServices.drawPage(page, $scope);
     };
 
     $scope.randomizeBiomes = function () {
@@ -179,6 +236,35 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
 
         $scope.onChangeBiomesDistribution();
     };
+
+    /* Glyph Generation */
+    $scope.glyphGenerationSliders = [
+        {
+            id: 1,
+            label: 'Strokes',
+            value: 2,
+            min: 1,
+            max: 4,
+            step: 1
+        },
+        {
+            id: 2,
+            label: 'Stroke Decay Threshold',
+            value: 0.9,
+            min: 0.0,
+            max: 1.0,
+            step: 0.01
+        },
+    ];
+    $scope.onChangeGlyphGenerationParameters = function () {
+        page.setGlyphGenerationParameters($scope.glyphGenerationSliders[0].value, $scope.glyphGenerationSliders[1].value);
+        page.generateGlyphs();
+
+        mapServices.drawPage(page, $scope);
+    };
+
+
+
 
     /* Perlin Noise */
     $scope.perlinSliders = [
@@ -211,7 +297,7 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
         world.setPerlinNoise($scope.perlinSliders[0].value, $scope.perlinSliders[1].value, $scope.perlinSliders[2].value);
         world.setBiomes($scope.selectedMode.id, $scope.islandSize.value, $scope.biomesDistribution, $scope.isGrey);
         mapServices.drawGrid(world, $scope.isGrey, $scope.biomesDistribution);
-        mapServices.drawPage(page);
+        mapServices.drawPage(page, $scope);
     };
 
     /* Button Refresh Perlin */
@@ -257,7 +343,7 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
         world.setBiomes($scope.selectedMode.id, $scope.islandSize.value, $scope.biomesDistribution, $scope.isGrey);
 
         mapServices.drawGrid(world, $scope.isGrey, $scope.biomesDistribution);
-        mapServices.drawPage(page);
+        mapServices.drawPage(page, $scope);
     };
 
     /* Button Refresh Gradients */
@@ -285,5 +371,5 @@ app.controller('mainCtrl', ['$scope', 'mapServices', 'genericServices', 'Biome',
     world.setBiomes($scope.selectedMode.id, $scope.islandSize.value, $scope.biomesDistribution, $scope.isGrey);
 
     mapServices.drawGrid(world, $scope.isGrey, $scope.biomesDistribution);
-    mapServices.drawPage(page);
+    mapServices.drawPage(page, $scope);
 }]);

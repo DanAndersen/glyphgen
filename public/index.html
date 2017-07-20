@@ -63,6 +63,7 @@
                         <hr />
 
                         <uib-tabset>
+
                             <!-- Biomes sliders -->
                             <uib-tab heading="Biomes" disable="isGrey" active="selectedTab[0]">
                                 <div ng-show="!isGrey">
@@ -143,12 +144,61 @@
                                 <button type="button" class="btn btn-default" ng-click="downloadPdf()"><i class="fa fa-file-pdf-o"></i> PDF</button>
                                 <a ng-show="browserCompliant" id="exportPng" class="btn btn-default" ng-click="downloadPng()"><i class="fa fa-file-image-o"></i> PNG</a>
                             </uib-tab>
+
+
+                            <!-- Page sliders -->
+                            <uib-tab heading="Page" active="selectedTab[4]">
+                                <h4>Page</h4>
+                            </uib-tab>
+
+                            <!-- Glyph generation sliders -->
+                            <uib-tab heading="Glyph Generation" active="selectedTab[5]">
+                                <h4>Glyph Generation</h4>
+
+                                <table class="slider-table">
+                                    <tbody ng-repeat="glyphGeneration in glyphGenerationSliders">
+                                        <tr>
+                                            <th colspan="2">
+                                                <label>{{ glyphGeneration.label }}</label>
+                                            </th>
+                                        </tr>
+                                        <tr class="slider-table-bottom-gap">
+                                            <td>
+                                                <slider tooltip="hide" slider-id="glyphGeneration.id" ng-model="glyphGeneration.value" value="glyphGeneration.value" min="glyphGeneration.min" max="glyphGeneration.max" step="glyphGeneration.step" on-slide="onChangeGlyphGenerationParameters()" ng-click="onChangeGlyphGenerationParameters()">
+                                                </slider>
+                                            </td>
+                                            <td class="text-right">{{ glyphGeneration.value }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </uib-tab>
+
+                            <!-- Glyph rendering sliders -->
+                            <uib-tab heading="Glyph Rendering" active="selectedTab[6]">
+                                <h4>Glyph Rendering</h4>
+
+                                <label>Line Interpolation</label>
+                                <div class="btn-group" uib-dropdown>
+                                    <button type="button" class="btn btn-default" uib-dropdown-toggle>
+                                        {{ selectedLineInterpolationMode.name }} <span class="caret"></span>
+                                    </button>
+                                    <ul uib-dropdown-menu>
+                                        <li ng-repeat="mode in lineInterpolationModes">
+                                            <a href ng-click="selectLineInterpolationMode(mode.id)">{{ mode.name }}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </uib-tab>
+
                         </uib-tabset>
 
                     </div>
                 </div>
                 <div class="footer">
-                    <p><em>XXX add link to public repo XXX</em></p>
+                    <p><em>Source code available on <a target="_blank" href="https://github.com/DanAndersen/glyphgen">Github</a></em></p>
+                </div>
                 </div>
             </div>
         </div>

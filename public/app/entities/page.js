@@ -3,12 +3,10 @@ app.factory('Page', ['Glyph', 'genericServices', function (Glyph, genericService
     'use strict';
     /* Constructor */
     function Page(width, height) {
-        var i, j;
-
         this.width = width;
         this.height = height;
 
-        this.glyphs = [];
+        
 
         this.numPoints = 8;
 
@@ -17,60 +15,11 @@ app.factory('Page', ['Glyph', 'genericServices', function (Glyph, genericService
         this.normalizedPoints = generateNormalizedPoints();
 
         this.numStrokesPerGlyph = 2;
+        this.strokeDecayThreshold = 0.9;
 
-        for (i = 0; i < width; i += 1) {
-            this.glyphs[i] = [];
-            
-            for (j = 0; j < height; j += 1) {
+        this.generationParametersChanged = true;
 
-                // list of all UNvisited edges
-                var inverseGlyphAdjacencySets = generateAdjacencySets();
-
-                var glyphStrokes = [];
-
-                for (var strokeIdx = 0; strokeIdx < this.numStrokesPerGlyph; strokeIdx++) {
-                    var startPoint = genericServices.rand(0, this.numPoints - 1);
-
-                    var glyphStroke = [startPoint];
-
-                    var continuingStroke = true;
-
-                    var currentPoint = startPoint;
-
-                    while (continuingStroke) {
-                        var inverseGlyphAdjacencyRow = inverseGlyphAdjacencySets[currentPoint];
-
-                        //var threshold = 0.5 * glyphStroke.length;
-
-                        if (Math.random() >= 0.9) {
-                            // decay rate
-                            continuingStroke = false;
-                        } else if (inverseGlyphAdjacencyRow.size === 0) {
-                            // nowhere else to go from the current point
-                            continuingStroke = false;
-                        } else {
-                            var nextPoint = getRandomFromSet(inverseGlyphAdjacencyRow);
-
-                            var correspondingAdjacencyRow = inverseGlyphAdjacencySets[nextPoint];
-                            inverseGlyphAdjacencyRow.delete(nextPoint);
-                            correspondingAdjacencyRow.delete(currentPoint);
-
-                            glyphStroke.push(nextPoint);
-
-
-
-                            currentPoint = nextPoint;
-                        }
-                    }
-
-                    if (glyphStroke.length > 1) {
-                        glyphStrokes.push(glyphStroke);
-                    }
-                }
-
-                this.glyphs[i][j] = new Glyph(glyphStrokes);
-            }
-        }
+        this.generateGlyphs();
     }
 
     // return point locations in NDC ([-1,+1] for X and Y)
@@ -108,7 +57,79 @@ app.factory('Page', ['Glyph', 'genericServices', function (Glyph, genericService
 
     /* Public functions */
     Page.prototype = {
+        setGlyphGenerationParameters: function(numStrokesPerGlyph, strokeDecayThreshold) {
+            if (this.numStrokesPerGlyph !== numStrokesPerGlyph) {
+                this.generationParametersChanged = true;
+            }
+            this.numStrokesPerGlyph = numStrokesPerGlyph;
 
+            if (this.strokeDecayThreshold !== strokeDecayThreshold) {
+                this.generationParametersChanged = true;
+            }
+            this.strokeDecayThreshold = strokeDecayThreshold;
+        },
+
+        generateGlyphs: function() {
+            if (this.generationParametersChanged) {
+                var i, j;
+                this.glyphs = [];
+                for (i = 0; i < this.width; i += 1) {
+                    this.glyphs[i] = [];
+                    
+                    for (j = 0; j < this.height; j += 1) {
+
+                        // list of all UNvisited edges
+                        var inverseGlyphAdjacencySets = generateAdjacencySets();
+
+                        var glyphStrokes = [];
+
+                        for (var strokeIdx = 0; strokeIdx < this.numStrokesPerGlyph; strokeIdx++) {
+                            var startPoint = genericServices.rand(0, this.numPoints - 1);
+
+                            var glyphStroke = [startPoint];
+
+                            var continuingStroke = true;
+
+                            var currentPoint = startPoint;
+
+                            while (continuingStroke) {
+                                var inverseGlyphAdjacencyRow = inverseGlyphAdjacencySets[currentPoint];
+
+                                if (Math.random() >= this.strokeDecayThreshold) {
+                                    // decay rate
+                                    continuingStroke = false;
+                                } else if (inverseGlyphAdjacencyRow.size === 0) {
+                                    // nowhere else to go from the current point
+                                    continuingStroke = false;
+                                } else {
+                                    var nextPoint = getRandomFromSet(inverseGlyphAdjacencyRow);
+
+                                    var correspondingAdjacencyRow = inverseGlyphAdjacencySets[nextPoint];
+                                    inverseGlyphAdjacencyRow.delete(nextPoint);
+                                    correspondingAdjacencyRow.delete(currentPoint);
+
+                                    glyphStroke.push(nextPoint);
+
+
+
+                                    currentPoint = nextPoint;
+                                }
+                            }
+
+                            if (glyphStroke.length > 1) {
+                                glyphStrokes.push(glyphStroke);
+                            }
+                        }
+
+                        this.glyphs[i][j] = new Glyph(glyphStrokes);
+                    }
+                }
+                this.generationParametersChanged = false;
+                return true;
+            } else {
+                return false;
+            }
+        },
     };
 
     return Page;
